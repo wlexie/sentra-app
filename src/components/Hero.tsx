@@ -1,5 +1,6 @@
 import { motion } from "motion/react";
-import { ArrowRight, Link } from "lucide-react";
+import { ArrowRight, Play } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function Hero() {
   return (
@@ -31,7 +32,7 @@ export default function Hero() {
             <div className="flex flex-wrap gap-4">
               <Link
                 to="/login"
-                className="group flex items-center gap-2 rounded-md bg-brand-primary px-6 py-3.5 text-sm font-bold text-white transition-all hover:bg-brand-primary/90 dark:bg-cyan-600 dark:hover:bg-cyan-500"
+                className="group flex items-center gap-2 rounded-md bg-brand-primary px-6 py-3.5 text-sm font-bold text-white transition-all hover:bg-brand-primary/90"
               >
                 Request a Quote
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
