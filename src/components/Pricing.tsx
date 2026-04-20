@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 const plans = [
   {
     name: "Starter",
-    price: "$499",
+    price: "KES 49,999",
     period: "/mo",
     features: [
       "Up to 5 Admins",
@@ -18,7 +18,7 @@ const plans = [
   },
   {
     name: "Professional",
-    price: "$1,299",
+    price: "KES 129,999",
     period: "/mo",
     features: [
       "Unlimited Clients",
