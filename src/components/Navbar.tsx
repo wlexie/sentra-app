@@ -1,5 +1,5 @@
 import { Search, Bell, Settings, ChevronDown } from "lucide-react";
-import { cn } from "@/src/lib/utils";
+// import { cn } from "@/src/lib/utils";
 
 export default function Navbar() {
   const navLinks = ["Solutions", "Platform", "Pricing", "Resources"];

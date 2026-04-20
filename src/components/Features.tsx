@@ -1,4 +1,4 @@
-import { motion } from "motion/react";
+// import { motion } from "motion/react";
 import {
   Users,
   FileText,
@@ -8,7 +8,7 @@ import {
   PlaySquare,
   Share2,
 } from "lucide-react";
-import { cn } from "@/src/lib/utils";
+// import { cn } from "@/src/lib/utils";
 
 export default function Features() {
   return (
