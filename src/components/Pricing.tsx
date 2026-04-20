@@ -1,5 +1,6 @@
 import { Check } from "lucide-react";
 import { cn } from "@/src/lib/utils";
+import { Link } from "react-router-dom";
 
 const plans = [
   {
@@ -13,6 +14,7 @@ const plans = [
     ],
     cta: "Get Started",
     popular: false,
+    link: "/login",
   },
   {
     name: "Professional",
@@ -26,6 +28,7 @@ const plans = [
     ],
     cta: "Start Free Trial",
     popular: true,
+    link: "/register",
   },
   {
     name: "Enterprise",
@@ -38,6 +41,7 @@ const plans = [
     ],
     cta: "Contact Sales",
     popular: false,
+    link: "/login",
   },
 ];
 
@@ -59,7 +63,7 @@ export default function Pricing() {
             <div
               key={plan.name}
               className={cn(
-                "relative flex flex-col p-8 rounded-3xl transition-all hover:shadow-xl",
+                "relative flex flex-col p-8 rounded-3xl transition-all duration-300 hover:shadow-xl",
                 plan.popular
                   ? "bg-brand-secondary text-white ring-4 ring-brand-primary/20 scale-105 z-10"
                   : "bg-white border border-slate-100 text-slate-900",
@@ -102,16 +106,17 @@ export default function Pricing() {
                 ))}
               </ul>
 
-              <button
+              <Link
+                to={plan.link}
                 className={cn(
-                  "w-full rounded-md px-4 py-3 text-sm font-bold transition-all",
+                  "flex items-center justify-center w-full rounded-md px-4 py-3 text-sm font-bold transition-all",
                   plan.popular
                     ? "bg-brand-primary text-white hover:bg-brand-primary/90"
                     : "bg-slate-50 text-slate-700 border border-slate-200 hover:bg-slate-100",
                 )}
               >
                 {plan.cta}
-              </button>
+              </Link>
             </div>
           ))}
         </div>

@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Link } from "lucide-react";
 
 export default function Hero() {
   return (
@@ -29,10 +29,13 @@ export default function Hero() {
             </div>
 
             <div className="flex flex-wrap gap-4">
-              <button className="group flex items-center gap-2 rounded-md bg-brand-primary px-6 py-3.5 text-sm font-bold text-white transition-all hover:bg-brand-primary/90">
+              <Link
+                to="/login"
+                className="group flex items-center gap-2 rounded-md bg-brand-primary px-6 py-3.5 text-sm font-bold text-white transition-all hover:bg-brand-primary/90 dark:bg-cyan-600 dark:hover:bg-cyan-500"
+              >
                 Request a Quote
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </button>
+              </Link>
               <button className="flex items-center gap-2 rounded-md border border-slate-200 bg-white px-6 py-3.5 text-sm font-bold text-slate-700 transition-all hover:bg-slate-50">
                 Watch Demo
               </button>

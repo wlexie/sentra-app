@@ -2,7 +2,7 @@ import { Globe, Share2, Linkedin } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="bg-brand-secondary text-slate-400 py-20 border-t border-slate-800">
+    <footer className="bg-brand-secondary text-slate-400 py-20 border-t border-slate-800 transition-colors duration-300">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="grid gap-12 lg:grid-cols-4">
           <div className="col-span-1 lg:col-span-1">

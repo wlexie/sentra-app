@@ -1,14 +1,13 @@
-// import { motion } from "motion/react";
+// import { motion } from 'motion/react';
 import {
   Users,
   FileText,
-  Smartphone,
   Network,
   ExternalLink,
   PlaySquare,
   Share2,
 } from "lucide-react";
-// import { cn } from "@/src/lib/utils";
+// import { cn } from '@/src/lib/utils';
 
 export default function Features() {
   return (
@@ -97,7 +96,7 @@ export default function Features() {
               <img
                 src="https://picsum.photos/seed/tracking/600/600"
                 alt="Campaign Tracking UI"
-                className="absolute inset-0 w-full h-full object-cover"
+                className="absolute inset-0 w-full h-full object-cover opacity-80"
                 referrerPolicy="no-referrer"
               />
               <div className="absolute inset-0 bg-brand-secondary/20" />

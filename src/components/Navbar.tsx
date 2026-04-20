@@ -1,6 +1,6 @@
 import { Search, Bell, Settings, ChevronDown } from "lucide-react";
 // import { cn } from "@/src/lib/utils";
-
+import { Link } from "react-router-dom";
 export default function Navbar() {
   const navLinks = ["Solutions", "Platform", "Pricing", "Resources"];
 
@@ -8,12 +8,12 @@ export default function Navbar() {
     <nav className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-md">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 lg:px-8">
         <div className="flex items-center gap-8">
-          <a href="/" className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2">
             <img src="/favicon.svg" alt="Sentra logo" className="w-8 h-8" />
             <span className="text-2xl font-bold tracking-tighter text-brand-secondary">
               Sentra
             </span>
-          </a>
+          </Link>
 
           <div className="hidden items-center gap-6 md:flex">
             {navLinks.map((link) => (
@@ -50,9 +50,12 @@ export default function Navbar() {
             </button>
           </div>
 
-          <button className="rounded-md bg-brand-primary px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-brand-primary/90 active:scale-95">
+          <Link
+            to="/login"
+            className="rounded-md bg-brand-primary px-4 py-2 text-sm font-semibold text-white transition-all hover:bg-brand-primary/90 active:scale-95"
+          >
             Get Started
-          </button>
+          </Link>
         </div>
       </div>
     </nav>
