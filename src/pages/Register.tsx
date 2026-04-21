@@ -132,7 +132,7 @@ export default function Register() {
             </h1>
             <p className="mt-8 text-xl text-slate-400 leading-relaxed">
               Join an elite ecosystem of enterprises leveraging high-fidelity
-              data structures and automated fiscal intelligence.
+              data structures and automated intelligence.
             </p>
           </motion.div>
 
