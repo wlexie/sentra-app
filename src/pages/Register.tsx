@@ -98,7 +98,7 @@ export default function Register() {
         <div className="relative hidden w-[45%] flex-col justify-center bg-slate-950 p-16 lg:flex">
           {/* Schematic Pattern Background */}
           <div className="absolute inset-0 opacity-[0.03] grayscale pointer-events-none overflow-hidden">
-            <div className="h-full w-full bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px]" />
+            <div className="h-full w-full bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[40px_40px]" />
           </div>
 
           <motion.div
@@ -109,7 +109,7 @@ export default function Register() {
             <div className="relative h-64 w-64 md:h-80 md:w-80">
               {/* Visual anchor - abstracted building/future icon */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="h-[70%] w-[40%] rounded-t-full border border-cyan-400/20 bg-gradient-to-b from-cyan-400/10 to-transparent" />
+                <div className="h-[70%] w-[40%] rounded-t-full border border-cyan-400/20 bg-linear-to-b from-cyan-400/10 to-transparent" />
               </div>
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="h-[40%] w-[30%] rotate-45 border border-cyan-400/30 bg-cyan-400/5 blur-sm" />

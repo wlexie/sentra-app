@@ -82,7 +82,7 @@ export default function Login() {
             className="h-full w-full object-cover opacity-20 transition-transform duration-10000 hover:scale-110"
             referrerPolicy="no-referrer"
           />
-          <div className="absolute inset-0 bg-gradient-to-tr from-slate-950 via-slate-950/80 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-tr from-slate-950 via-slate-950/80 to-transparent" />
         </div>
 
         <motion.div
