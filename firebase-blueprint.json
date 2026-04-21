@@ -15,28 +15,26 @@
       "required": ["uid", "email", "fullName", "role", "createdAt"]
     },
     "Quote": {
-      "title": "Financial Quote",
-      "description": "Marketing campaign quote for client approval.",
+      "title": "Campaign Quote",
+      "description": "Marketing campaign quote with AI-generated analysis.",
       "type": "object",
       "properties": {
         "id": { "type": "string" },
         "clientId": { "type": "string" },
         "clientName": { "type": "string" },
-        "items": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "description": { "type": "string" },
-              "amount": { "type": "number" }
-            }
-          }
-        },
-        "totalAmount": { "type": "number" },
-        "status": { "type": "string", "enum": ["draft", "pending", "approved", "rejected"] },
-        "createdAt": { "type": "string", "format": "date-time" }
+        "companyName": { "type": "string" },
+        "campaignName": { "type": "string" },
+        "objective": { "type": "string", "enum": ["Awareness", "Conversion", "Engagement", "Retention", "Rebrand"] },
+        "deliverables": { "type": "string" },
+        "budgetEstimate": { "type": "number" },
+        "duration": { "type": "string" },
+        "targetAudience": { "type": "string" },
+        "aiAnalysis": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["clientId", "status", "totalAmount", "createdAt"]
+      "required": ["clientId", "campaignName", "objective", "budgetEstimate", "status", "createdAt"]
     }
   },
   "firestore": {

@@ -29,8 +29,11 @@ service cloud.firestore {
 
     function isValidQuote(data) {
       return data.clientId is string && data.clientId.size() <= 128 &&
-             data.totalAmount is number && data.totalAmount >= 0 &&
-             data.status in ['draft', 'pending', 'approved', 'rejected'];
+             data.campaignName is string && data.campaignName.size() <= 200 &&
+             data.objective in ['Awareness', 'Conversion', 'Engagement', 'Retention', 'Rebrand'] &&
+             data.budgetEstimate is number && data.budgetEstimate >= 0 &&
+             data.status in ['pending', 'approved', 'rejected'] &&
+             (!('aiAnalysis' in data) || (data.aiAnalysis is string && data.aiAnalysis.size() <= 10000));
     }
 
     // 1. The "Master Gate" (Collections)
@@ -58,17 +61,18 @@ service cloud.firestore {
       allow list: if isAdmin() || (isSignedIn() && resource.data.clientId == request.auth.uid);
       
       allow create: if isSignedIn() 
-                    && isValidId(quoteId)
                     && isValidQuote(incoming())
                     && (isAdmin() || incoming().clientId == request.auth.uid);
 
-      allow update: if isSignedIn() && isValidQuote(incoming()) && (
+      allow update: if isSignedIn() && (
         isAdmin() // Admins can change everything including status
         || 
-        // Clients can change draft/pending content but NOT status
+        // Clients can change pending content but NOT status
         (existing().clientId == request.auth.uid && 
-         existing().status in ['draft', 'pending'] &&
-         incoming().diff(existing()).affectedKeys().hasOnly(['items', 'totalAmount']))
+         existing().status == 'pending' &&
+         isValidQuote(incoming()) &&
+         incoming().status == existing().status &&
+         incoming().diff(existing()).affectedKeys().hasOnly(['campaignName', 'objective', 'deliverables', 'budgetEstimate', 'duration', 'targetAudience']))
       );
       
       allow delete: if isAdmin(); // Only admins can delete quotes

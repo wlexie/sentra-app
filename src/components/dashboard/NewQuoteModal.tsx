@@ -4,6 +4,7 @@ import {
   X,
   Loader2,
   Sparkles,
+  Target,
   DollarSign,
   Calendar,
   ChevronRight,
@@ -11,6 +12,7 @@ import {
 import { db } from "@/src/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { useAuth } from "@/src/contexts/AuthContext";
+import { GoogleGenAI } from "@google/genai";
 
 interface NewQuoteModalProps {
   isOpen: boolean;
@@ -35,12 +37,54 @@ export function NewQuoteModal({
     targetAudience: "",
   });
 
+  const generateAIAnalysis = async () => {
+    try {
+      const apiKey = process.env.GEMINI_API_KEY;
+      if (!apiKey) {
+        console.warn("Gemini API key missing, skipping analysis");
+        return "AI Analysis not available at this time.";
+      }
+
+      const ai = new GoogleGenAI({ apiKey });
+      const prompt = `
+        As a senior marketing architect at Sentra, provide a professional, concise strategic analysis for the following campaign request:
+        
+        Campaign Name: ${formData.campaignName}
+        Objective: ${formData.objective}
+        Target Audience: ${formData.targetAudience}
+        Budget (USD): ${formData.budget}
+        Duration: ${formData.duration}
+        Deliverables: ${formData.deliverables}
+        
+        Provide a 3-paragraph summary covering:
+        1. Market Positioning & Feasibility
+        2. Strategic Audience Alignment
+        3. Projected Impact & ROI potential
+        
+        Keep the tone professional, architectural, and data-driven.
+      `;
+
+      const response = await ai.models.generateContent({
+        model: "gemini-3-flash-preview",
+        contents: prompt,
+      });
+
+      return response.text || "Unable to generate strategic summary.";
+    } catch (error) {
+      console.error("Gemini Error:", error);
+      return "Strategic analysis generation failed but campaign was recorded.";
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
 
     setLoading(true);
     try {
+      // First generate the AI Analysis
+      const aiAnalysis = await generateAIAnalysis();
+
       const quoteData = {
         clientId: user.uid,
         clientName: profile?.fullName || "Anonymous",
@@ -51,6 +95,7 @@ export function NewQuoteModal({
         budgetEstimate: parseFloat(formData.budget) || 0,
         duration: formData.duration,
         targetAudience: formData.targetAudience,
+        aiAnalysis: aiAnalysis,
         status: "pending",
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
