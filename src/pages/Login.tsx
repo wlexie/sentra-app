@@ -1,13 +1,23 @@
+import { useState } from "react";
 import { motion } from "motion/react";
-import { Chrome } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Chrome, Loader2, AlertCircle } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+} from "firebase/auth";
+import { auth } from "../lib/firebase";
 
 function Logo() {
   return (
     <div className="flex items-center gap-2">
-      <span className="text-2xl font-bold tracking-tighter text-cyan-400">
+      <Link
+        to="/"
+        className="text-2xl font-bold tracking-tighter text-cyan-400"
+      >
         Sentra
-      </span>
+      </Link>
     </div>
   );
 }
@@ -22,6 +32,44 @@ const MicrosoftIcon = () => (
 );
 
 export default function Login() {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const handleEmailLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    try {
+      await signInWithEmailAndPassword(auth, formData.email, formData.password);
+      navigate("/dashboard");
+    } catch (err: any) {
+      console.error("Login error:", err);
+      setError(err.message || "Invalid credentials.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+      navigate("/dashboard");
+    } catch (err: any) {
+      console.error("Google login error:", err);
+      setError(err.message || "Google login failed.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="flex min-h-screen bg-white font-sans text-slate-900">
       {/* Left Panel: Brand & Atmosphere */}
@@ -100,7 +148,18 @@ export default function Login() {
             </p>
           </div>
 
-          <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 flex items-center gap-3 rounded-lg bg-red-50 p-4 text-sm text-red-600 border border-red-100"
+            >
+              <AlertCircle className="h-5 w-5 shrink-0" />
+              <p>{error}</p>
+            </motion.div>
+          )}
+
+          <form className="space-y-6" onSubmit={handleEmailLogin}>
             <div className="space-y-2">
               <label
                 className="text-xs font-bold uppercase tracking-widest text-slate-900"
@@ -112,6 +171,11 @@ export default function Login() {
                 <input
                   id="email"
                   type="email"
+                  required
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                   placeholder="architect@sentra.io"
                   className="h-12 w-full rounded-md border border-slate-100 bg-slate-50 px-4 text-sm outline-none transition-all focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/10"
                 />
@@ -137,6 +201,11 @@ export default function Login() {
                 <input
                   id="password"
                   type="password"
+                  required
+                  value={formData.password}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
                   placeholder="••••••••"
                   className="h-12 w-full rounded-md border border-slate-100 bg-slate-50 px-4 text-sm outline-none transition-all focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/10"
                 />
@@ -157,8 +226,16 @@ export default function Login() {
               </label>
             </div>
 
-            <button className="h-12 w-full rounded-md bg-brand-primary text-sm font-bold text-white transition-all hover:bg-brand-primary/90 active:scale-[0.98] shadow-lg shadow-brand-primary/20">
-              Sign In to Dashboard
+            <button
+              type="submit"
+              disabled={loading}
+              className="h-12 w-full rounded-md bg-brand-primary text-sm font-bold text-white transition-all hover:bg-brand-primary/90 active:scale-[0.98] shadow-lg shadow-brand-primary/20 disabled:opacity-70"
+            >
+              {loading ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                "Sign In to Dashboard"
+              )}
             </button>
 
             <div className="relative py-4">
@@ -173,11 +250,18 @@ export default function Login() {
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <button className="flex h-12 items-center justify-center gap-3 rounded-md border border-slate-100 bg-white transition-all hover:bg-slate-50">
+              <button
+                type="button"
+                onClick={handleGoogleLogin}
+                className="flex h-12 items-center justify-center gap-3 rounded-md border border-slate-100 bg-white transition-all hover:bg-slate-50"
+              >
                 <Chrome className="h-5 w-5 text-[#4285F4]" />
                 <span className="text-sm font-bold text-slate-700">Google</span>
               </button>
-              <button className="flex h-12 items-center justify-center gap-3 rounded-md border border-slate-100 bg-white transition-all hover:bg-slate-50">
+              <button
+                type="button"
+                className="flex h-12 items-center justify-center gap-3 rounded-md border border-slate-100 bg-white transition-all hover:bg-slate-50 opacity-50 cursor-not-allowed"
+              >
                 <MicrosoftIcon />
                 <span className="text-sm font-bold text-slate-700">
                   Microsoft

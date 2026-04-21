@@ -1,0 +1,77 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 3. Primitive Definition
+    function isSignedIn() { return request.auth != null; }
+    function isVerified() { return isSignedIn() && request.auth.token.email_verified == true; }
+    function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    
+    // Auth tokens don't contain roles yet, so we get them from the DB
+    function isAdmin() { 
+      return isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'; 
+    }
+
+    // 2. Validation Blueprints
+    function isValidUser(data) {
+      return data.uid is string && data.uid.size() <= 128 &&
+             data.email is string && data.email.size() <= 128 &&
+             data.fullName is string && data.fullName.size() >= 2 && data.fullName.size() <= 100 &&
+             data.role in ['admin', 'client'];
+    }
+
+    function isValidQuote(data) {
+      return data.clientId is string && data.clientId.size() <= 128 &&
+             data.totalAmount is number && data.totalAmount >= 0 &&
+             data.status in ['draft', 'pending', 'approved', 'rejected'];
+    }
+
+    // 1. The "Master Gate" (Collections)
+    
+    match /users/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
+      
+      allow create: if isSignedIn() 
+                    && isOwner(userId) 
+                    && isValidUser(incoming())
+                    && incoming().role == 'client'; // Forced client status on self-reg
+      
+      allow update: if isSignedIn() && (
+        // Client can update their own info (but not role)
+        (isOwner(userId) && isValidUser(incoming()) && incoming().diff(existing()).affectedKeys().hasOnly(['fullName', 'companyName']))
+        || 
+        // Admins can update anything
+        (isAdmin() && isValidUser(incoming()))
+      );
+    }
+
+    match /quotes/{quoteId} {
+      allow get: if isAdmin() || (isSignedIn() && existing().clientId == request.auth.uid);
+      allow list: if isAdmin() || (isSignedIn() && resource.data.clientId == request.auth.uid);
+      
+      allow create: if isSignedIn() 
+                    && isValidId(quoteId)
+                    && isValidQuote(incoming())
+                    && (isAdmin() || incoming().clientId == request.auth.uid);
+
+      allow update: if isSignedIn() && isValidQuote(incoming()) && (
+        isAdmin() // Admins can change everything including status
+        || 
+        // Clients can change draft/pending content but NOT status
+        (existing().clientId == request.auth.uid && 
+         existing().status in ['draft', 'pending'] &&
+         incoming().diff(existing()).affectedKeys().hasOnly(['items', 'totalAmount']))
+      );
+      
+      allow delete: if isAdmin(); // Only admins can delete quotes
+    }
+  }
+}

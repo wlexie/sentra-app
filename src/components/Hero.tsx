@@ -49,14 +49,14 @@ export default function Hero() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="relative"
           >
-            <div className="relative z-10 rounded-2xl border-8 border-slate-100 bg-brand-secondary/95 p-1 shadow-2xl overflow-hidden aspect-[4/3]">
+            <div className="relative z-10 rounded-2xl border-8 border-slate-100 bg-brand-secondary/95 p-1 shadow-2xl overflow-hidden aspect-4/3">
               <img
                 src="https://picsum.photos/seed/dashboard/1200/900"
                 alt="Sentra Dashboard UI"
                 className="w-full h-full object-cover rounded-xl opacity-80 mix-blend-overlay"
                 referrerPolicy="no-referrer"
               />
-              <div className="absolute inset-0 bg-gradient-to-tr from-brand-secondary/40 to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-tr from-brand-secondary/40 to-transparent" />
 
               {/* Mock UI Elements */}
               <div className="absolute left-6 top-6 right-6">
