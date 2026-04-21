@@ -17,7 +17,7 @@ import {
   Cell,
 } from "recharts";
 
-// Stats Cards
+// --- Stats Cards ---
 
 export function StatCard({
   label,
@@ -78,7 +78,7 @@ export function StatCard({
   );
 }
 
-// Velocity Chart
+// --- Velocity Chart ---
 
 const chartData = [
   { name: "Jan", value: 25 },
@@ -252,31 +252,33 @@ function IntegrationItem({
 
 // --- Quotes Table ---
 
-const quotes = [
+const placeholderQuotes = [
   {
     id: "#é -8812",
-    campaign: "Summer Solstice Blast",
-    client: "15 High-Res Creatives",
-    budget: "$12,400.00",
-    status: "Approved",
+    campaignName: "Summer Solstice Blast",
+    deliverables: "15 High-Res Creatives",
+    budgetEstimate: 12400.0,
+    status: "approved",
   },
   {
     id: "#é -8809",
-    campaign: "Tech Rebrand 2.0",
-    client: "Twitter Thread Strategy",
-    budget: "$4,200.00",
-    status: "Pending",
+    campaignName: "Tech Rebrand 2.0",
+    deliverables: "Twitter Thread Strategy",
+    budgetEstimate: 4200.0,
+    status: "pending",
   },
   {
     id: "#é -8798",
-    campaign: "Influencer Outreach",
-    client: "30 Creator Agreements",
-    budget: "$18,950.00",
-    status: "Approved",
+    campaignName: "Influencer Outreach",
+    deliverables: "30 Creator Agreements",
+    budgetEstimate: 18950.0,
+    status: "approved",
   },
 ];
 
-export function QuotesTable() {
+export function QuotesTable({ data }: { data?: any[] }) {
+  const displayQuotes = data && data.length > 0 ? data : placeholderQuotes;
+
   return (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden mt-8">
       <div className="p-6 border-b flex justify-between items-center bg-slate-50/30">
@@ -322,28 +324,28 @@ export function QuotesTable() {
           </tr>
         </thead>
         <tbody>
-          {quotes.map((quote) => (
+          {displayQuotes.map((quote) => (
             <tr
               key={quote.id}
               className="border-b last:border-b-0 hover:bg-slate-50 transition-colors"
             >
-              <td className="px-6 py-4 text-sm font-medium text-slate-500">
+              <td className="px-6 py-4 text-xs font-medium text-slate-500 truncate max-w-25">
                 {quote.id}
               </td>
               <td className="px-6 py-4 text-sm font-bold text-slate-900">
-                {quote.campaign}
+                {quote.campaignName}
               </td>
-              <td className="px-6 py-4 text-sm text-slate-500">
-                {quote.client}
+              <td className="px-6 py-4 text-sm text-slate-500 truncate max-w-50">
+                {quote.deliverables}
               </td>
               <td className="px-6 py-4 text-sm font-bold text-slate-900">
-                {quote.budget}
+                ${(quote.budgetEstimate || 0).toLocaleString()}
               </td>
               <td className="px-6 py-4">
                 <span
                   className={`
                   px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-tight
-                  ${quote.status === "Approved" ? "bg-[#E8F5E9] text-[#2E7D32]" : "bg-[#E3F2FD] text-[#1565C0]"}
+                  ${quote.status?.toLowerCase() === "approved" ? "bg-[#E8F5E9] text-[#2E7D32]" : "bg-[#E3F2FD] text-[#1565C0]"}
                 `}
                 >
                   {quote.status}
@@ -351,17 +353,17 @@ export function QuotesTable() {
               </td>
               <td className="px-6 py-4">
                 <div className="flex items-center gap-4">
-                  {quote.status === "Approved" ? (
-                    <button className="text-[10px] font-bold uppercase text-[#006677] hover:underline">
-                      View PDF
+                  {quote.status?.toLowerCase() === "approved" ? (
+                    <button className="text-[10px] font-bold uppercase text-[#006677] hover:underline transition-all">
+                      View Asset
                     </button>
                   ) : (
                     <>
-                      <button className="text-[10px] font-bold uppercase text-[#006677] hover:underline">
-                        Approve
+                      <button className="text-[10px] font-bold uppercase text-[#006677] hover:underline transition-all">
+                        Review
                       </button>
-                      <button className="text-[10px] font-bold uppercase text-slate-400 hover:text-slate-600">
-                        Edit
+                      <button className="text-[10px] font-bold uppercase text-slate-400 hover:text-slate-600 transition-all">
+                        Delete
                       </button>
                     </>
                   )}

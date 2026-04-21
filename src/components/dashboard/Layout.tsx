@@ -13,20 +13,16 @@ import {
 
 interface SidebarProps {
   activeTab: string;
+  onNewCampaign?: () => void;
 }
 
-export function Sidebar({ activeTab }: SidebarProps) {
+export function Sidebar({ activeTab, onNewCampaign }: SidebarProps) {
   return (
     <aside className="w-64 border-r bg-white flex flex-col h-screen sticky top-0">
       <div className="p-6">
-        <div className="flex items-center gap-2">
-          <img src="/favicon.svg" alt="Sentra logo" className="w-8 h-8" />
-
-          <h1 className="text-xl font-bold tracking-tight text-slate-900 italic">
-            Sentra
-          </h1>
-        </div>
-
+        <h1 className="text-xl font-bold tracking-tight text-slate-900 italic">
+          Sentra Unified
+        </h1>
         <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold mt-1">
           Marketing & Finance
         </p>
@@ -54,7 +50,10 @@ export function Sidebar({ activeTab }: SidebarProps) {
       </nav>
 
       <div className="p-4 space-y-4">
-        <button className="flex items-center justify-center gap-2 w-full bg-[#006677] text-white py-2.5 rounded-lg text-sm font-bold shadow-lg shadow-[#006677]/20 hover:bg-[#005566] transition-all active:scale-95">
+        <button
+          onClick={onNewCampaign}
+          className="flex items-center justify-center gap-2 w-full bg-[#006677] text-white py-2.5 rounded-lg text-sm font-bold shadow-lg shadow-[#006677]/20 hover:bg-[#005566] transition-all active:scale-95"
+        >
           <Plus className="h-4 w-4" />
           New Campaign
         </button>
@@ -100,7 +99,13 @@ function SidebarLink({
   );
 }
 
-export function DashboardHeader({ userName }: { userName: string }) {
+export function DashboardHeader({
+  userName,
+  onNewCampaign,
+}: {
+  userName: string;
+  onNewCampaign?: () => void;
+}) {
   return (
     <header className="flex justify-between items-start mb-8">
       <div>
@@ -114,6 +119,13 @@ export function DashboardHeader({ userName }: { userName: string }) {
       </div>
 
       <div className="flex items-center gap-4">
+        <button
+          onClick={onNewCampaign}
+          className="flex items-center gap-2 bg-[#006677] text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-[#006677]/20 hover:bg-[#005566] transition-all active:scale-95"
+        >
+          <Plus className="h-4 w-4" />
+          New Campaign
+        </button>
         <button className="h-10 w-10 flex items-center justify-center rounded-full bg-white border border-slate-100 text-slate-400 hover:text-slate-600 shadow-sm">
           <Bell className="h-5 w-5" />
         </button>

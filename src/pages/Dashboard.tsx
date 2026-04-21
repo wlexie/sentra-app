@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { Sidebar, DashboardHeader } from "@/src/components/dashboard/Layout";
 import {
@@ -5,22 +6,58 @@ import {
   VelocityChart,
   SocialIntegrations,
   QuotesTable,
-} from "../components/dashboard/Widgets";
+} from "@/src/components/dashboard/Widgets";
+import { NewQuoteModal } from "@/src/components/dashboard/NewQuoteModal";
 import { motion } from "motion/react";
 import { Link } from "react-router-dom";
+import { db } from "@/src/lib/firebase";
+import {
+  collection,
+  query,
+  where,
+  orderBy,
+  onSnapshot,
+} from "firebase/firestore";
 
 export default function Dashboard() {
-  const { profile } = useAuth();
+  const { profile, user } = useAuth();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [quotes, setQuotes] = useState<any[]>([]);
   const isClient = profile?.role === "client";
+
+  useEffect(() => {
+    if (!user) return;
+
+    // Fetch user's quotes
+    const q = query(
+      collection(db, "quotes"),
+      where("clientId", "==", user.uid),
+      orderBy("createdAt", "desc"),
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const quotesData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setQuotes(quotesData);
+    });
+
+    return () => unsubscribe();
+  }, [user]);
 
   return (
     <div className="flex min-h-screen bg-white font-sans text-slate-900 border-l border-slate-100">
-      <Sidebar activeTab="overview" />
+      <Sidebar
+        activeTab="overview"
+        onNewCampaign={() => setIsModalOpen(true)}
+      />
 
       <main className="flex-1 bg-[#F9FBFC] min-h-screen">
         <div className="p-8 lg:p-12 max-w-350 mx-auto">
           <DashboardHeader
             userName={profile?.fullName?.split(" ")[0] || "Architect"}
+            onNewCampaign={() => setIsModalOpen(true)}
           />
 
           {isClient ? (
@@ -40,7 +77,7 @@ export default function Dashboard() {
                 <StatCard
                   label="Portfolio Value"
                   value="$1.2M Insights"
-                  subtext="Global reach expanded by 2.4M unique impressions this cycle."
+                  subtext="Global reach expanded by {quotes.length || 2}.4M unique impressions this cycle."
                   accent
                 />
               </div>
@@ -52,7 +89,7 @@ export default function Dashboard() {
               </div>
 
               {/* Bottom Table */}
-              <QuotesTable />
+              <QuotesTable data={quotes} />
             </motion.div>
           ) : (
             <motion.div
@@ -80,6 +117,12 @@ export default function Dashboard() {
               </div>
             </motion.div>
           )}
+
+          <NewQuoteModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onSuccess={(id) => console.log("Created quote:", id)}
+          />
 
           {/* Footer Component from Image */}
           <footer className="mt-20 pt-12 border-t border-slate-200 bg-[#0D1B2A] -mx-8 lg:-mx-12 px-8 lg:px-12 pb-12 rounded-t-[40px]">
