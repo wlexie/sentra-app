@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   TrendingUp,
   CheckCircle2,
@@ -6,16 +6,20 @@ import {
   Settings,
   Link2,
   Search,
+  Eye,
+  Sparkles,
 } from "lucide-react";
 import {
   BarChart,
   Bar,
   XAxis,
   YAxis,
+  CartesianGrid,
   Tooltip,
   ResponsiveContainer,
   Cell,
 } from "recharts";
+import { QuoteDetailModal } from "./QuoteModal";
 
 // --- Stats Cards ---
 
@@ -277,107 +281,123 @@ const placeholderQuotes = [
 ];
 
 export function QuotesTable({ data }: { data?: any[] }) {
+  const [selectedQuote, setSelectedQuote] = useState<any | null>(null);
   const displayQuotes = data && data.length > 0 ? data : placeholderQuotes;
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden mt-8">
-      <div className="p-6 border-b flex justify-between items-center bg-slate-50/30">
-        <h3 className="text-lg font-bold text-slate-900 tracking-tight">
-          Recent Generated Quotes
-        </h3>
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" />
-            <input
-              type="text"
-              placeholder="Search quotes..."
-              className="pl-9 pr-4 py-2 bg-slate-100 border-none rounded-lg text-sm outline-none focus:ring-2 focus:ring-slate-200 transition-all w-64"
-            />
+    <>
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden mt-8">
+        <div className="p-6 border-b flex justify-between items-center bg-slate-50/30">
+          <h3 className="text-lg font-bold text-slate-900 tracking-tight">
+            Recent Generated Quotes
+          </h3>
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-300" />
+              <input
+                type="text"
+                placeholder="Search quotes..."
+                className="pl-9 pr-4 py-2 bg-slate-100 border-none rounded-lg text-sm outline-none focus:ring-2 focus:ring-slate-200 transition-all w-64"
+              />
+            </div>
+            <button className="p-2 bg-slate-100 rounded-lg text-slate-400 hover:text-slate-600">
+              <MoreHorizontal className="h-5 w-5" />
+            </button>
           </div>
-          <button className="p-2 bg-slate-100 rounded-lg text-slate-400 hover:text-slate-600">
-            <MoreHorizontal className="h-5 w-5" />
-          </button>
         </div>
+
+        <table className="w-full text-left">
+          <thead>
+            <tr className="border-b bg-slate-50/50">
+              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                Quote ID
+              </th>
+              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                Campaign Name
+              </th>
+              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                Deliverable
+              </th>
+              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                Budget Estimate
+              </th>
+              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                Status
+              </th>
+              <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {displayQuotes.map((quote) => (
+              <tr
+                key={quote.id}
+                className="border-b last:border-b-0 hover:bg-slate-50 transition-colors"
+              >
+                <td className="px-6 py-4 text-xs font-medium text-slate-500 truncate max-w-25">
+                  {quote.id}
+                </td>
+                <td className="px-6 py-4 text-sm font-bold text-slate-900">
+                  {quote.campaignName}
+                </td>
+                <td className="px-6 py-4 text-sm text-slate-500 truncate max-w-50">
+                  {quote.deliverables}
+                </td>
+                <td className="px-6 py-4 text-sm font-bold text-slate-900">
+                  ${(quote.budgetEstimate || 0).toLocaleString()}
+                </td>
+                <td className="px-6 py-4">
+                  <span
+                    className={`
+                    px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-tight
+                    ${quote.status?.toLowerCase() === "approved" ? "bg-[#E8F5E9] text-[#2E7D32]" : "bg-[#E3F2FD] text-[#1565C0]"}
+                  `}
+                  >
+                    {quote.status}
+                  </span>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="flex items-center gap-4">
+                    {quote.status?.toLowerCase() === "approved" ? (
+                      <button
+                        onClick={() => setSelectedQuote(quote)}
+                        className="flex items-center gap-1.5 text-[10px] font-bold uppercase text-[#006677] hover:underline transition-all"
+                      >
+                        <Eye className="h-3 w-3" />
+                        View Specs
+                      </button>
+                    ) : (
+                      <>
+                        <button
+                          onClick={() => setSelectedQuote(quote)}
+                          className="flex items-center gap-1.5 text-[10px] font-bold uppercase text-[#006677] hover:underline transition-all"
+                        >
+                          <Sparkles className="h-3 w-3" />
+                          Review AI
+                        </button>
+                        <button className="text-[10px] font-bold uppercase text-slate-400 hover:text-slate-600 transition-all">
+                          Delete
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <button className="w-full py-4 text-sm font-bold text-slate-500 hover:text-slate-900 border-t bg-slate-50/10 hover:bg-slate-50 transition-all flex items-center justify-center gap-2">
+          View All Historical Quotes
+          <TrendingUp className="h-4 w-4" />
+        </button>
       </div>
 
-      <table className="w-full text-left">
-        <thead>
-          <tr className="border-b bg-slate-50/50">
-            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">
-              Quote ID
-            </th>
-            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">
-              Campaign Name
-            </th>
-            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">
-              Deliverable
-            </th>
-            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">
-              Budget Estimate
-            </th>
-            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">
-              Status
-            </th>
-            <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {displayQuotes.map((quote) => (
-            <tr
-              key={quote.id}
-              className="border-b last:border-b-0 hover:bg-slate-50 transition-colors"
-            >
-              <td className="px-6 py-4 text-xs font-medium text-slate-500 truncate max-w-25">
-                {quote.id}
-              </td>
-              <td className="px-6 py-4 text-sm font-bold text-slate-900">
-                {quote.campaignName}
-              </td>
-              <td className="px-6 py-4 text-sm text-slate-500 truncate max-w-50">
-                {quote.deliverables}
-              </td>
-              <td className="px-6 py-4 text-sm font-bold text-slate-900">
-                ${(quote.budgetEstimate || 0).toLocaleString()}
-              </td>
-              <td className="px-6 py-4">
-                <span
-                  className={`
-                  px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-tight
-                  ${quote.status?.toLowerCase() === "approved" ? "bg-[#E8F5E9] text-[#2E7D32]" : "bg-[#E3F2FD] text-[#1565C0]"}
-                `}
-                >
-                  {quote.status}
-                </span>
-              </td>
-              <td className="px-6 py-4">
-                <div className="flex items-center gap-4">
-                  {quote.status?.toLowerCase() === "approved" ? (
-                    <button className="text-[10px] font-bold uppercase text-[#006677] hover:underline transition-all">
-                      View Asset
-                    </button>
-                  ) : (
-                    <>
-                      <button className="text-[10px] font-bold uppercase text-[#006677] hover:underline transition-all">
-                        Review
-                      </button>
-                      <button className="text-[10px] font-bold uppercase text-slate-400 hover:text-slate-600 transition-all">
-                        Delete
-                      </button>
-                    </>
-                  )}
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <button className="w-full py-4 text-sm font-bold text-slate-500 hover:text-slate-900 border-t bg-slate-50/10 hover:bg-slate-50 transition-all flex items-center justify-center gap-2">
-        View All Historical Quotes
-        <TrendingUp className="h-4 w-4" />
-      </button>
-    </div>
+      <QuoteDetailModal
+        quote={selectedQuote}
+        onClose={() => setSelectedQuote(null)}
+      />
+    </>
   );
 }
