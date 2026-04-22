@@ -19,7 +19,7 @@ import { auth, db } from "../lib/firebase";
 function Logo() {
   return (
     <div className="flex items-center gap-2">
-      <span className="text-2xl font-bold tracking-tighter text-slate-900 lg:text-cyan-400/80">
+      <span className="text-2xl font-bold tracking-tighter text-slate-900 lg:text-cyan-400/90">
         Sentra
       </span>
     </div>
@@ -72,7 +72,16 @@ export default function Register() {
       navigate("/dashboard");
     } catch (err: any) {
       console.error("Registration error:", err);
-      setError(err.message || "An error occurred during registration.");
+      let message = "An error occurred during registration.";
+      if (err.code === "auth/email-already-in-use") {
+        message = "This email is already registered. Try logging in instead.";
+      } else if (err.code === "auth/operation-not-allowed") {
+        message =
+          "Email/Password registration is not enabled in the Firebase Console.";
+      } else if (err.code === "auth/weak-password") {
+        message = "The password is too weak. Please use at least 6 characters.";
+      }
+      setError(`${message} (Code: ${err.code})`);
     } finally {
       setLoading(false);
     }
@@ -132,7 +141,7 @@ export default function Register() {
             </h1>
             <p className="mt-8 text-xl text-slate-400 leading-relaxed">
               Join an elite ecosystem of enterprises leveraging high-fidelity
-              data structures and automated intelligence.
+              data structures and automated fiscal intelligence.
             </p>
           </motion.div>
 

@@ -4,7 +4,6 @@ import {
   X,
   Loader2,
   Sparkles,
-  Target,
   DollarSign,
   Calendar,
   ChevronRight,

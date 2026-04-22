@@ -20,9 +20,13 @@ export function Sidebar({ activeTab, onNewCampaign }: SidebarProps) {
   return (
     <aside className="w-64 border-r bg-white flex flex-col h-screen sticky top-0">
       <div className="p-6">
-        <h1 className="text-xl font-bold tracking-tight text-slate-900 italic">
-          Sentra Unified
-        </h1>
+        <div className="flex items-center gap-2">
+          <img src="/favicon.svg" alt="Sentra logo" className="w-8 h-8" />
+
+          <h1 className="text-xl font-bold tracking-tight text-slate-900 italic">
+            Sentra
+          </h1>
+        </div>
         <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold mt-1">
           Marketing & Finance
         </p>

@@ -21,7 +21,7 @@ import {
 } from "recharts";
 import { QuoteDetailModal } from "./QuoteModal";
 
-// --- Stats Cards ---
+//  Stats Cards
 
 export function StatCard({
   label,

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "motion/react";
-import { Chrome, Loader2, AlertCircle } from "lucide-react";
+import { Mail, Lock, Chrome, Loader2, AlertCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   signInWithEmailAndPassword,
@@ -49,7 +49,17 @@ export default function Login() {
       navigate("/dashboard");
     } catch (err: any) {
       console.error("Login error:", err);
-      setError(err.message || "Invalid credentials.");
+      // More descriptive error handling for the user
+      let message = "Invalid email or password.";
+      if (err.code === "auth/operation-not-allowed") {
+        message =
+          "Email/Password sign-in is not enabled in the Firebase Console.";
+      } else if (err.code === "auth/user-disabled") {
+        message = "This account has been disabled.";
+      } else if (err.code === "auth/invalid-email") {
+        message = "Please enter a valid email address.";
+      }
+      setError(`${message} (Code: ${err.code})`);
     } finally {
       setLoading(false);
     }

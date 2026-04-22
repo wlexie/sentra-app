@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { Sidebar, DashboardHeader } from "@/src/components/dashboard/Layout";
 import {
@@ -124,7 +124,7 @@ export default function Dashboard() {
             onSuccess={(id) => console.log("Created quote:", id)}
           />
 
-          {/* Footer Component from Image */}
+          {/* Footer */}
           <footer className="mt-20 pt-12 border-t border-slate-200 bg-[#0D1B2A] -mx-8 lg:-mx-12 px-8 lg:px-12 pb-12 rounded-t-[40px]">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-12 text-white">
               <div className="col-span-1 md:col-span-1">
@@ -189,7 +189,7 @@ export default function Dashboard() {
 
             <div className="mt-20 pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center text-[10px] uppercase font-bold tracking-widest text-slate-500">
               <p>
-                © 2024 Sentra Technologies. All rights reserved. Precision in
+                © 2026 Sentra Technologies. All rights reserved. Precision in
                 every insight.
               </p>
               <div className="flex gap-8 mt-4 md:mt-0">
