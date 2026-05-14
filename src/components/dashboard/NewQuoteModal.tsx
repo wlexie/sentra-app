@@ -4,6 +4,7 @@ import {
   X,
   Loader2,
   Sparkles,
+  Target,
   DollarSign,
   Calendar,
   ChevronRight,
@@ -17,16 +18,21 @@ interface NewQuoteModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: (quoteId: string) => void;
+  clients?: any[];
+  initialClientId?: string;
 }
 
 export function NewQuoteModal({
   isOpen,
   onClose,
   onSuccess,
+  clients = [],
+  initialClientId,
 }: NewQuoteModalProps) {
   const { user, profile } = useAuth();
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
+  const [selectedClient, setSelectedClient] = useState<any | null>(null);
   const [formData, setFormData] = useState({
     campaignName: "",
     objective: "Awareness",
@@ -35,6 +41,16 @@ export function NewQuoteModal({
     duration: "30 Days",
     targetAudience: "",
   });
+
+  const isAdmin = profile?.role === "admin";
+
+  // Pre-select client if provided
+  React.useEffect(() => {
+    if (isOpen && initialClientId && clients.length > 0) {
+      const client = clients.find((c) => c.id === initialClientId);
+      if (client) setSelectedClient(client);
+    }
+  }, [isOpen, initialClientId, clients]);
 
   const generateAIAnalysis = async () => {
     try {
@@ -84,10 +100,22 @@ export function NewQuoteModal({
       // First generate the AI Analysis
       const aiAnalysis = await generateAIAnalysis();
 
+      // If admin is creating for a client, use selected client data
+      const targetClientId =
+        isAdmin && selectedClient ? selectedClient.id : user.uid;
+      const targetClientName =
+        isAdmin && selectedClient
+          ? selectedClient.fullName
+          : profile?.fullName || "Anonymous";
+      const targetCompanyName =
+        isAdmin && selectedClient
+          ? selectedClient.companyName || "N/A"
+          : profile?.companyName || "N/A";
+
       const quoteData = {
-        clientId: user.uid,
-        clientName: profile?.fullName || "Anonymous",
-        companyName: profile?.companyName || "N/A",
+        clientId: targetClientId,
+        clientName: targetClientName,
+        companyName: targetCompanyName,
         campaignName: formData.campaignName,
         objective: formData.objective,
         deliverables: formData.deliverables,
@@ -96,6 +124,7 @@ export function NewQuoteModal({
         targetAudience: formData.targetAudience,
         aiAnalysis: aiAnalysis,
         status: "pending",
+        createdBy: user.uid, // Track who actually created it
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       };
@@ -113,9 +142,11 @@ export function NewQuoteModal({
         duration: "30 Days",
         targetAudience: "",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating quote:", error);
-      alert("Failed to generate quote. Please try again.");
+      alert(
+        `Failed to generate quote: ${error.message || "Unknown error"}. Check if all required fields are filled.`,
+      );
     } finally {
       setLoading(false);
     }
@@ -132,7 +163,7 @@ export function NewQuoteModal({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -177,6 +208,35 @@ export function NewQuoteModal({
                   animate={{ opacity: 1, x: 0 }}
                   className="space-y-6"
                 >
+                  {isAdmin && (
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold uppercase tracking-widest text-[#006677]">
+                        Assign to Client
+                      </label>
+                      <select
+                        required
+                        className="w-full h-12 bg-slate-50 border border-slate-100 rounded-xl px-4 outline-none focus:ring-2 focus:ring-[#006677]/20 focus:border-[#006677] transition-all font-bold text-sm appearance-none"
+                        onChange={(e) => {
+                          const client = clients.find(
+                            (c) => c.id === e.target.value,
+                          );
+                          setSelectedClient(client || null);
+                        }}
+                        value={selectedClient?.id || ""}
+                      >
+                        <option value="">Select a client...</option>
+                        {clients.map((client) => (
+                          <option key={client.id} value={client.id}>
+                            {client.fullName}{" "}
+                            {client.companyName
+                              ? `(${client.companyName})`
+                              : ""}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
                   <div className="space-y-2">
                     <label className="text-xs font-bold uppercase tracking-widest text-slate-500">
                       Campaign Identity
@@ -333,7 +393,7 @@ export function NewQuoteModal({
                     <button
                       type="submit"
                       disabled={loading}
-                      className="flex-2 flex items-center justify-center gap-2 bg-brand-primary text-white py-4 rounded-xl font-bold hover:bg-brand-primary/90 shadow-lg shadow-brand-primary/20 transition-all active:scale-95 disabled:opacity-70"
+                      className="flex-[2] flex items-center justify-center gap-2 bg-brand-primary text-white py-4 rounded-xl font-bold hover:bg-brand-primary/90 shadow-lg shadow-brand-primary/20 transition-all active:scale-95 disabled:opacity-70"
                     >
                       {loading ? (
                         <>
@@ -342,7 +402,7 @@ export function NewQuoteModal({
                         </>
                       ) : (
                         <>
-                          Generate Quote Analysis
+                          Launch Activation & Generate Analysis
                           <Sparkles className="h-4 w-4" />
                         </>
                       )}

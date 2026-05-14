@@ -1,6 +1,14 @@
 import { useState } from "react";
 import { motion } from "motion/react";
-import { Mail, Lock, Chrome, Loader2, AlertCircle } from "lucide-react";
+import {
+  Mail,
+  Lock,
+  Chrome,
+  Loader2,
+  AlertCircle,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   signInWithEmailAndPassword,
@@ -35,6 +43,7 @@ export default function Login() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -210,15 +219,26 @@ export default function Login() {
               <div className="relative group">
                 <input
                   id="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   required
                   value={formData.password}
                   onChange={(e) =>
                     setFormData({ ...formData, password: e.target.value })
                   }
                   placeholder="••••••••"
-                  className="h-12 w-full rounded-md border border-slate-100 bg-slate-50 px-4 text-sm outline-none transition-all focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/10"
+                  className="h-12 w-full rounded-md border border-slate-100 bg-slate-50 px-4 pr-12 text-sm outline-none transition-all focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/10"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
               </div>
             </div>
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   X,
@@ -8,8 +8,12 @@ import {
   Calendar,
   Sparkles,
   Building2,
+  Loader2,
+  CheckCircle2,
 } from "lucide-react";
 import Markdown from "react-markdown";
+import { db } from "@/src/lib/firebase";
+import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 
 interface QuoteDetailModalProps {
   quote: any | null;
@@ -17,12 +21,30 @@ interface QuoteDetailModalProps {
 }
 
 export function QuoteDetailModal({ quote, onClose }: QuoteDetailModalProps) {
+  const [updating, setUpdating] = useState(false);
   if (!quote) return null;
+
+  const handleUpdateStatus = async (newStatus: string) => {
+    setUpdating(true);
+    try {
+      const quoteRef = doc(db, "quotes", quote.id);
+      await updateDoc(quoteRef, {
+        status: newStatus,
+        updatedAt: serverTimestamp(),
+      });
+      onClose();
+    } catch (error) {
+      console.error("Error updating status:", error);
+      alert("Status update failed. Please try again.");
+    } finally {
+      setUpdating(false);
+    }
+  };
 
   return (
     <AnimatePresence>
       {quote && (
-        <div className="fixed inset-0 z-110 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -125,7 +147,7 @@ export function QuoteDetailModal({ quote, onClose }: QuoteDetailModalProps) {
                 {/* Right Side: AI Strategic Analysis */}
                 <div className="lg:col-span-2 space-y-6">
                   <div className="relative overflow-hidden group">
-                    <div className="absolute inset-0 bg-linear-to-br from-brand-primary/5 via-transparent to-transparent opacity-50 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-brand-primary/5 via-transparent to-transparent opacity-50 group-hover:opacity-100 transition-opacity" />
                     <div className="relative bg-white p-8 rounded-2xl border border-brand-primary/20 shadow-lg shadow-brand-primary/5">
                       <div className="flex items-center gap-2 mb-6">
                         <Sparkles className="h-5 w-5 text-brand-primary" />
@@ -151,12 +173,34 @@ export function QuoteDetailModal({ quote, onClose }: QuoteDetailModalProps) {
 
                   {quote.status === "pending" && (
                     <div className="flex gap-4 pt-4">
-                      <button className="flex-1 bg-brand-primary text-white py-4 rounded-xl font-bold hover:bg-brand-primary/90 transition-all shadow-lg shadow-brand-primary/20">
-                        Proceed to Activation
+                      <button
+                        disabled={updating}
+                        onClick={() => handleUpdateStatus("approved")}
+                        className="flex-1 bg-brand-primary text-white py-4 rounded-xl font-bold hover:bg-brand-primary/90 transition-all shadow-lg shadow-brand-primary/20 flex items-center justify-center gap-2 disabled:opacity-50"
+                      >
+                        {updating ? (
+                          <Loader2 className="h-5 w-5 animate-spin" />
+                        ) : (
+                          "Approve & Activate"
+                        )}
                       </button>
-                      <button className="flex-1 bg-white border border-slate-200 text-slate-600 py-4 rounded-xl font-bold hover:bg-slate-50 transition-all">
+                      <button
+                        disabled={updating}
+                        onClick={() => handleUpdateStatus("modifying")}
+                        className="flex-1 bg-white border border-slate-200 text-slate-600 py-4 rounded-xl font-bold hover:bg-slate-50 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                      >
                         Request Modifications
                       </button>
+                    </div>
+                  )}
+                  {quote.status === "approved" && (
+                    <div className="pt-4">
+                      <div className="p-4 bg-teal-50 border border-teal-100 rounded-xl flex items-center gap-3 text-teal-700">
+                        <CheckCircle2 className="h-5 w-5" />
+                        <span className="text-sm font-bold">
+                          This campaign is activated and live.
+                        </span>
+                      </div>
                     </div>
                   )}
                 </div>

@@ -10,6 +10,8 @@ import {
   HelpCircle,
   AlertCircle,
   Loader2,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
@@ -19,7 +21,7 @@ import { auth, db } from "../lib/firebase";
 function Logo() {
   return (
     <div className="flex items-center gap-2">
-      <span className="text-2xl font-bold tracking-tighter text-slate-900 lg:text-cyan-400/90">
+      <span className="text-2xl font-bold tracking-tighter text-slate-900 lg:text-white">
         Sentra
       </span>
     </div>
@@ -30,6 +32,7 @@ export default function Register() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -258,18 +261,29 @@ export default function Register() {
                 <label className="text-xs font-bold uppercase tracking-widest text-slate-900">
                   Secure Password
                 </label>
-                <div className="relative">
+                <div className="relative group">
                   <Lock className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                   <input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     required
                     placeholder="••••••••••••"
                     value={formData.password}
                     onChange={(e) =>
                       setFormData({ ...formData, password: e.target.value })
                     }
-                    className="h-14 w-full rounded-md border border-slate-100 bg-slate-50 pl-12 pr-4 text-sm outline-none transition-all focus:border-brand-primary focus:bg-white focus:ring-4 focus:ring-brand-primary/10"
+                    className="h-14 w-full rounded-md border border-slate-100 bg-slate-50 pl-12 pr-12 text-sm outline-none transition-all focus:border-brand-primary focus:bg-white focus:ring-4 focus:ring-brand-primary/10"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
                 </div>
                 <p className="text-[10px] italic text-slate-400">
                   Must be at least 12 characters with a mix of symbols.

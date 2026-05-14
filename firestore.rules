@@ -29,11 +29,16 @@ service cloud.firestore {
 
     function isValidQuote(data) {
       return data.clientId is string && data.clientId.size() <= 128 &&
+             data.clientName is string && data.clientName.size() <= 200 &&
+             data.companyName is string && data.companyName.size() <= 200 &&
              data.campaignName is string && data.campaignName.size() <= 200 &&
              data.objective in ['Awareness', 'Conversion', 'Engagement', 'Retention', 'Rebrand'] &&
              data.budgetEstimate is number && data.budgetEstimate >= 0 &&
-             data.status in ['pending', 'approved', 'rejected'] &&
-             (!('aiAnalysis' in data) || (data.aiAnalysis is string && data.aiAnalysis.size() <= 10000));
+             data.status in ['pending', 'approved', 'rejected', 'modifying'] &&
+             data.duration is string && data.duration.size() <= 100 &&
+             data.deliverables is string && data.deliverables.size() <= 5000 &&
+             data.targetAudience is string && data.targetAudience.size() <= 5000 &&
+             (!('aiAnalysis' in data) || (data.aiAnalysis is string && data.aiAnalysis.size() <= 20000));
     }
 
     // 1. The "Master Gate" (Collections)
